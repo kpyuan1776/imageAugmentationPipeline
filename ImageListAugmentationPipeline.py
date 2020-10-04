@@ -20,7 +20,7 @@ class ImageListAugmentationPipeline(JSONSerializable.JSONSerializable):
         >>> dataGenerator = imgaugPipeline.getDataGenerator(imgsList_Input,imgsList_Output)
     """
 
-	def __init__(self, inputProcessings: [] = [], imagePairAugmentations: [] = [],zoomRange = 0.3, patchSize = [256,256], parameters = None, checkSteps=False):
+	def __init__(self, inputProcessings: [] = [], imagePatchCropper, imagePairAugmentations: [] = [], patchSize = [256,256], parameters = None, checkSteps=False):
 		super().__init__(str(type(self).__name__), parameters)
 		self.checkImageStackPreProc=[]
         self.checkImageStackPair=[]
@@ -28,14 +28,17 @@ class ImageListAugmentationPipeline(JSONSerializable.JSONSerializable):
         self.patchSize = patchSize
 		if (parameters is None):
 			self.inputProcessings = inputProcessings
+            self.imagePatchCropper = imagePatchCropper
             self.imagePairAugmentations = imagePairAugmentations
-            self.parameters['zoomRange'] = zoomRange
 		else:
 			self.parameters = parameters
 			self.inputProcessings = []
             self.imagePairAugmentations = []
             for p in parameters['inputProcessing']:
                 self.inputProcessings.append(factory.createPipelineFromJSON(p))
+
+            self.imagePatchCropper = factory.createPipelineFromJSON(parameters['imagePatchCropper'])
+
 			for f in parameters['imagePairAugmentation']:
 				self.imagePairAugmentations.append(factory.createPipelineFromJSON(f))
 
@@ -105,7 +108,7 @@ class ImageListAugmentationPipeline(JSONSerializable.JSONSerializable):
             if self.checkSteps:
                 self.checkImageStackPreProc.append(image)
 
-        img, annotation = self.getRandomPositionZoomCrop(image,mask,[self.patchSize,self.patchSize])
+        img, annotation = self.imagePatchCropper(image,mask,[self.patchSize,self.patchSize])
 
         for f in self.imagePairAugmentations:
             imagePatch, maskPatch = f.modifyImagePair(imagePatch, maskPatch)
@@ -121,25 +124,5 @@ class ImageListAugmentationPipeline(JSONSerializable.JSONSerializable):
         return image
 
 
-    def getRandomPositionZoomCrop(img,mask,crop=[512,512]):
-        """ get a random crop with random zoom level of a fixed height and width defined by crop 
-            get a box for cropping in normalized image coordinates (i.e. whole image is [0,0,1,1] 
-            * pick a random variables $zoomFactor \in  (-zoomRange,+zoomRange)$
-            * compute crop in normalized image coordinates
-            * compute zoomedCrop in normalized image coordinates
-            * pick a tuple of random variables $offset \in ([0,1-zoomedCrop[0]],[0,1-zoomedCrop[1]])$
-            * finally crop box is tf.concat([offset, offset+zoomedNormCrop], axis=1)
-            ARGS:
-                zoomRange: width of interval for allowed random zoom factors >0, <1 (e.g. 0.3) 
-        """
-        zoomRange = self.parameters['zoomRange']
-        zoomFactor = tf.random.uniform((1,1), -zoomRange, zoomRange)
-        zoomedNormCrop = [crop[0]*(1+zoomFactor[0,0])/img.shape[0],crop[1]*(1+zoomFactor[0,0])/img.shape[1]]
-        
-        offset = tf.concat([tf.random.uniform((1, 1), 0, 1-zoomedNormCrop[0]),tf.random.uniform((1, 1), 0, 1-zoomedNormCrop[1])],axis=1)
-        boxes = tf.concat([offset, offset+zoomedNormCrop], axis=1)
-        cropped_image = tf.image.crop_and_resize(tf.expand_dims(img, 0), boxes, [0], crop, method='bilinear')
-        cropped_annotation = tf.image.crop_and_resize(tf.expand_dims(mask, 0), boxes, [0], crop, method='nearest')
-        return cropped_image,cropped_annotation
 
 
