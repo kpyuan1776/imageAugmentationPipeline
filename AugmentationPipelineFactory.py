@@ -7,7 +7,7 @@ import json
 
 
 
-class ImageAnalysisFactory():
+class AugmentationPipelineFactory():
 
     def createPipelineFromJSON(self, jsonObject):
         identifier = jsonObject['identifier']

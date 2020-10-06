@@ -1,8 +1,8 @@
 import numpy as np
 import collections
-import JSONSerializable
+import JSONSerializer
 
-class BasicImagePairAugmentation(JSONSerializable.JSONSerializable):
+class BasicImagePairAugmentation(JSONSerializer.JSONSerializer):
     def __init__(self, identifier: str, parameters = None):
         super().__init__(identifier, parameters)
 
