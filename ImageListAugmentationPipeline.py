@@ -10,6 +10,9 @@ import random
 
 factory = AugmentationPipelineFactory()
 
+import threading
+
+import time
 
 class ImageListAugmentationPipeline(JSONSerializer.JSONSerializer):
 	""" Defines a data augmentation pipeline consisting of a list of image operations.
@@ -97,6 +100,8 @@ class ImageListAugmentationPipeline(JSONSerializer.JSONSerializer):
 			if(batchShift+batchSize >=len(indexlist)):
 				batchShift = 0
 				random.shuffle(indexlist)
+
+			time.sleep(3)
 			
 			yield tf.cast(image, tf.float32),tf.cast(mask, tf.float32)
 		

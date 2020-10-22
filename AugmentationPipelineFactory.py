@@ -2,6 +2,7 @@ from RandomPosZoomCropper import RandomPosZoomCropper
 from GaussianNoise import GaussianNoise
 from ElasticTransformer import ElasticTransformer
 from standardPreprocessors import RandomBrightness, RandomContrast, tfPreprocessing
+from BlurKernelPreprocessing import BlurKernelPreprocessing
 
 import json
 
