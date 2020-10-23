@@ -1,0 +1,18 @@
+{
+    "training": 
+    {
+        "imagepath": [], 
+        "maskpath": []
+    },
+    "validation":
+    {
+        "imagepath": [], 
+        "maskpath": []
+    },
+    "testimage":
+    {
+        "imagepath": [],
+        "maskpath": []
+    }
+  
+}
