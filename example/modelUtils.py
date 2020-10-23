@@ -11,6 +11,9 @@ import os
 import tensorflow as tf
 
 
+""" getModel() returns a LinkNet type deep neural network
+"""
+
 
 
 def firstBlock(i, numFilter, kernelSize=7, poolSize=3, strides=2, initializer='he_uniform', kernelRegularizer=None, layername='initial'):
@@ -19,7 +22,7 @@ def firstBlock(i, numFilter, kernelSize=7, poolSize=3, strides=2, initializer='h
                strides=strides,
                padding='same',
                kernel_initializer=initializer,
-               kernel_regularizer=regularizer,
+               kernel_regularizer=kernelRegularizer,
                name=layername+'_conv2d_1')(i)
     x = BatchNormalization(name=layername+'_bn')(x)
     x = Activation('relu', name=layername+'_relu')(x)
@@ -92,7 +95,7 @@ def decoderBlock(x, numFilter, kernelSize=3, strides=2, spatialDropout=None, ini
                strides=1,
                padding='same',
                kernel_initializer=initializer,
-               kernel_regularizer=regularizer,
+               kernel_regularizer=kernelRegularizer,
                name=layername+'_conv2d_2')(x)
     x = BatchNormalization(name=layername+'_bn_3')(x)
     # x = tf.keras.layers.Dropout(dropout, name=layername+'_dropout')(x)

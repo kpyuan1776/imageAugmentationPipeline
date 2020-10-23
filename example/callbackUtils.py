@@ -1,9 +1,17 @@
 import numpy as np
 import cv2
 import tensorflow as tf
+import os
+import matplotlib.pyplot as plt
+import io
 
 
 
+def load_images(fpath, num_channels=3):
+    image = tf.io.read_file(fpath)
+    image = tf.io.decode_png(image, channels=num_channels)
+    image = tf.image.convert_image_dtype(image, tf.float32)
+    return image
 
 
 def convertToSummary(image):
