@@ -101,7 +101,7 @@ class ImageListAugmentationPipeline(JSONSerializer.JSONSerializer):
 				batchShift = 0
 				random.shuffle(indexlist)
 
-			time.sleep(3)
+			time.sleep(1)
 			
 			yield tf.cast(image, tf.float32),tf.cast(mask, tf.float32)
 		

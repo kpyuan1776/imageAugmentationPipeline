@@ -86,7 +86,8 @@ if __name__ == '__main__':
         patchSize=[512,512]))
     # start tensorboard from cmd:  tensorboard --logdisavedModels/logs/
     callbacks.append(tf.keras.callbacks.TerminateOnNaN())  # terminate if loss is nan
-    callbacks.append(OneCycleLearningRatePolicy(maxLearningRate=0.003,maxMomentum=None,minMomentum=None))
+    callbacks.append(OneCycleLearningRatePolicy(maxLearningRate=0.003,
+                    batch_size=batch_size, numtrainingsamples=len(imageListTraining),maxMomentum=None,minMomentum=None))
 
     #pdb.set_trace()
 

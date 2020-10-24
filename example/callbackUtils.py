@@ -121,7 +121,7 @@ class OneCycleLearningRatePolicy(tf.keras.callbacks.Callback):
     https://github.com/fastai/fastai
     """
 
-    def __init__(self, maxLearningRate, endPercentage=0.1, scalePercentage=None,
+    def __init__(self, maxLearningRate, batch_size, numtrainingsamples,endPercentage=0.1, scalePercentage=None,
                     maxMomentum=0.95, minMomentum=0.85,verbose=True):
         super(OneCycleLearningRatePolicy, self).__init__()
 
@@ -132,6 +132,8 @@ class OneCycleLearningRatePolicy(tf.keras.callbacks.Callback):
             raise ValueError('scalePercentage not in [0,1]')
 
         self.initialLearningRate = maxLearningRate
+        self.batch_size = batch_size
+        self.samples = numtrainingsamples
         self.endPercentage = endPercentage
         self.scale = float(scalePercentage) if scalePercentage is not None else float(endPercentage)
         self.maxMomentum = maxMomentum
@@ -197,8 +199,8 @@ class OneCycleLearningRatePolicy(tf.keras.callbacks.Callback):
         logs = logs or {}
 
         self.epochs = self.params['epochs']
-        self.batch_size = self.params['batch_size']
-        self.samples = self.params['samples']
+        #self.batch_size = self.params['batch_size']
+        #self.samples = self.params['samples']
         self.steps = self.params['steps']
 
         if self.steps is not None:
