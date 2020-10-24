@@ -7,7 +7,7 @@ import sys
 sys.path.append('..')
 
 from metricUtils import CustomIoU, CustomRMSE, CustomPrecision, CustomRecall, CustomMetric
-from callbackUtils import TBCallbackImages
+from callbackUtils import TBCallbackImages, OneCycleLearningRatePolicy
 import modelUtils 
 from dataUtils import ImageDataHandler
 
@@ -17,7 +17,7 @@ from GaussianNoise import GaussianNoise
 from ElasticTransformer import ElasticTransformer
 from standardPreprocessors import RandomBrightness, RandomContrast, tfPreprocessing
 from ImageListAugmentationPipeline import ImageListAugmentationPipeline
-
+OneCycleLearningRatePolicy
 
 
 
@@ -82,11 +82,11 @@ if __name__ == '__main__':
     callbacks.append(TBCallbackImages(
         imgPath=validationImgPath,
         logDir=os.path.join('savedModels', 'logs'),
-        valSteps=validation_steps))
+        valSteps=validation_steps,
+        patchSize=[512,512]))
     # start tensorboard from cmd:  tensorboard --logdisavedModels/logs/
-    callbacks.append(tf.keras.callbacks.TerminateOnNaN()
-                 )  # terminate if loss is nan
-    #  callbacks.append(OneCycleLR(max_lr=0.003,maximum_momentum=None,minimum_momentum=None))
+    callbacks.append(tf.keras.callbacks.TerminateOnNaN())  # terminate if loss is nan
+    callbacks.append(OneCycleLearningRatePolicy(maxLearningRate=0.003,maxMomentum=None,minMomentum=None))
 
     #pdb.set_trace()
 
