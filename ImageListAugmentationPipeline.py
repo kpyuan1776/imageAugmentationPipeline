@@ -23,7 +23,7 @@ class ImageListAugmentationPipeline(JSONSerializer.JSONSerializer):
 		>>> dataGenerator = imgaugPipeline.getDataGenerator(imgsList_Input,imgsList_Output)
 	"""
 
-	def __init__(self, inputProcessings: [] = [], imagePatchCropper = None, imagePairAugmentations: [] = [], patchSize = [256,256], parameters = None, checkSteps=False):
+	def __init__(self, inputProcessings: [] = [], annotationProcessings: [] = [], imagePatchCropper = None, imagePairAugmentations: [] = [], patchSize = [256,256], parameters = None, checkSteps=False):
 		super().__init__(str(type(self).__name__), parameters)
 		self.checkImageStackPreProc=[]
 		self.checkImageStackPair=[]
@@ -31,14 +31,19 @@ class ImageListAugmentationPipeline(JSONSerializer.JSONSerializer):
 		self.patchSize = patchSize
 		if (parameters is None):
 			self.inputProcessings = inputProcessings
+			self.annotationProcessings = annotationProcessings
 			self.imagePatchCropper = imagePatchCropper
 			self.imagePairAugmentations = imagePairAugmentations
 		else:
 			self.parameters = parameters
 			self.inputProcessings = []
+			self.annotationProcessings = []
 			self.imagePairAugmentations = []
 			for p in parameters['inputProcessing']:
 				self.inputProcessings.append(factory.createPipelineFromJSON(p))
+
+			for a in parameters['annotationProcessing']:
+				self.inputProcessings.append(factory.createPipelineFromJSON(a))
 
 			self.imagePatchCropper = factory.createPipelineFromJSON(parameters['imagePatchCropper'])
 
@@ -60,6 +65,10 @@ class ImageListAugmentationPipeline(JSONSerializer.JSONSerializer):
 				'inputProcessing': [
 					p.toJSON() for p in self.inputProcessings
 				],
+				'annotationProcessing': [
+					p.toJSON() for p in self.annotationProcessings
+				],
+				'imagePatchCropper': imagePatchCropper.toJSON(),
 				'imagePairAugmentation': [
 					f.toJSON() for f in self.imagePairAugmentations
 				]
@@ -113,6 +122,11 @@ class ImageListAugmentationPipeline(JSONSerializer.JSONSerializer):
 			image = p.preprocessImage(image)
 			if self.checkSteps:
 				self.checkImageStackPreProc.append(image)
+
+		for a in self.annotationProcessings:
+			mask = a.preprocessAnnotation(mask)
+			if self.checkSteps:
+				self.checkImageStackPreProc.append(mask)
 
 		if self.imagePatchCropper is not None:
 			imagePatch, maskPatch = self.imagePatchCropper.cropImagePair(image,mask,self.patchSize)

@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 
+import tensorflow as tf
+
 from enum import Enum
 Kernelmethod = Enum('Type','gaussian exponential')
 
@@ -57,12 +59,14 @@ class BlurKernelPreprocessing(BasicAnnotationPreprocessing.BasicAnnotationPrepro
 		else:
 			raise TypeError('kernel type not implemented')
 
-		probabilityMap = self.computeProbabilityMapFromPixelPosImage(mask)
+		mask_np = np.array(tf.squeeze(mask))
+		probabilityMap = self.computeProbabilityMapFromPixelPosImage(mask_np)
 		return probabilityMap
 
 
 	def computeProbabilityMapFromPixelPosImage(self,posPixelImg):
-		x,y = np.where(posPixelImg==255)
+
+		x,y = np.where(posPixelImg==1)
 	
 		probabilityMap = np.zeros(posPixelImg.shape,dtype=np.float32)
 		kernelSize = self.kernel.shape[0]
@@ -76,7 +80,7 @@ class BlurKernelPreprocessing(BasicAnnotationPreprocessing.BasicAnnotationPrepro
 			comp[1,:,:] = self.kernel[xkernel[0]:xkernel[1],ykernel[0]:ykernel[1]]
 			probabilityMap[xcoord[0]:xcoord[1],ycoord[0]:ycoord[1]] = np.max(comp,axis=0)
 		
-		return probabilityMap
+		return tf.expand_dims(probabilityMap,axis=-1)
 
 
 

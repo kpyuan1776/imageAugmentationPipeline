@@ -58,7 +58,13 @@ if __name__ == '__main__':
               metrics=['accuracy', CustomMetric(1, 0.5), CustomPrecision(0.5), CustomRecall(0.5), CustomIoU(), CustomRMSE()])
 
 
+    #p = ImageListAugmentationPipeline([RandomBrightness(), RandomContrast(), tfPreprocessing()],[],
+    #        RandomPosZoomCropper(),
+    #        [ElasticTransformer(), GaussianNoise()],
+    #        patchSize = [512,512])
+
     p = ImageListAugmentationPipeline([RandomBrightness(), RandomContrast(), tfPreprocessing()],
+            [BlurKernelPreprocessing(kerneltype=Kernelmethod.gaussian,kernelsize=[51,51], sigma=8)],
             RandomPosZoomCropper(),
             [ElasticTransformer(), GaussianNoise()],
             patchSize = [512,512])
