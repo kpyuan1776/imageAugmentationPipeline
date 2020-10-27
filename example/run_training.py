@@ -17,8 +17,7 @@ from GaussianNoise import GaussianNoise
 from ElasticTransformer import ElasticTransformer
 from standardPreprocessors import RandomBrightness, RandomContrast, tfPreprocessing
 from ImageListAugmentationPipeline import ImageListAugmentationPipeline
-OneCycleLearningRatePolicy
-
+from BlurKernelPreprocessing import BlurKernelPreprocessing, Kernelmethod
 
 
 import pdb
@@ -31,8 +30,8 @@ if __name__ == '__main__':
                         help='json to get all the training data information')
     args = parser.parse_args()
     
-    batch_size = 16 # 128#64#32
-    numEpoch = 2 #,5,#150,#25,#60
+    batch_size = 128 # 128#64#32
+    numEpoch = 35 #,5,#150,#25,#60
     
     datahandler = ImageDataHandler(args.inputJson)
     imageListTraining, maskListTraining = datahandler.getTrainingData()
