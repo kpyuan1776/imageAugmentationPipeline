@@ -79,6 +79,12 @@ if __name__ == '__main__':
         mode='min',
         verbose=1,
         period=2)]
+    callbacks = [tf.keras.callbacks.ModelCheckpoint(
+        filepath=os.path.join('savedModels', 'tfmodel'),
+        save_best_only=True,
+        mode='min',
+        verbose=1,
+        period=2)]
     callbacks.append(tf.keras.callbacks.TensorBoard(
         log_dir=os.path.join('savedModels', 'logs'),
         histogram_freq=1,
@@ -101,4 +107,5 @@ if __name__ == '__main__':
 			callbacks=callbacks,max_queue_size=1,workers=1, use_multiprocessing=False)
 
 
-    model.save('savedModel.h5')
+    model.save('savedModel.h5') #old .h5
+    model.save("savedtfModel") #.pb format
